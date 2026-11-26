@@ -1,102 +1,200 @@
-import React, { useState } from 'react';
-import { CALLER_PRESETS } from '../data/scenarios';
-import { LockIcon, ShieldIcon, UnlockIcon } from './Icons';
+import React, { useMemo, useState } from 'react';
+import {
+  CALLER_PROFILES,
+  evaluateCallerScenario,
+  SIMULATOR_PRESETS
+} from '../engine/guardrailEngine';
+import { CheckIcon, CopyIcon, LockIcon, ShieldIcon, UnlockIcon } from './Icons';
+import RoutingCanvas from './RoutingCanvas';
 
 export default function CallerSimulator() {
-  const [selectedId, setSelectedId] = useState(CALLER_PRESETS[0].id);
-  const active = CALLER_PRESETS.find((item) => item.id === selectedId) || CALLER_PRESETS[0];
+  const [selectedPresetId, setSelectedPresetId] = useState(SIMULATOR_PRESETS[0].id);
+  const [callerProfile, setCallerProfile] = useState(SIMULATOR_PRESETS[0].callerProfile);
+  const [utterance, setUtterance] = useState(SIMULATOR_PRESETS[0].utterance);
+  const [copied, setCopied] = useState(false);
+
+  const result = useMemo(
+    () => evaluateCallerScenario({ callerProfile, utterance }),
+    [callerProfile, utterance]
+  );
+
+  const jsonString = useMemo(
+    () => JSON.stringify(result.telegramJson, null, 2),
+    [result.telegramJson]
+  );
+
+  const handleSelectPreset = (preset) => {
+    setSelectedPresetId(preset.id);
+    setCallerProfile(preset.callerProfile);
+    setUtterance(preset.utterance);
+    setCopied(false);
+  };
+
+  const handleCustomUtterance = (value) => {
+    setSelectedPresetId('custom');
+    setUtterance(value);
+    setCopied(false);
+  };
+
+  const handleProfileChange = (profileId) => {
+    setSelectedPresetId('custom');
+    setCallerProfile(profileId);
+    setCopied(false);
+  };
+
+  const handleCopyJson = async () => {
+    try {
+      await navigator.clipboard.writeText(jsonString);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setCopied(false);
+    }
+  };
+
+  const routingStage =
+    result.laneTone === 'blocked'
+      ? 'firewall'
+      : result.laneTone === 'private'
+        ? 'telegram'
+        : 'gate';
 
   return (
-    <section className="section" id="simulator" aria-labelledby="simulator-heading">
-      <div className="section-head">
-        <span className="eyebrow">Interactive Caller Simulator</span>
-        <h2 id="simulator-heading" className="section-title">
-          Two-lane caller isolation in plain English
-        </h2>
-        <p className="section-subtitle">
-          Tap a caller below to see how Mohammed gets full personal memory while every other caller
-          stays in a helpful, sealed guest lane.
-        </p>
-      </div>
-
-      <div className="preset-grid" role="tablist" aria-label="Choose a caller scenario">
-        {CALLER_PRESETS.map((preset) => {
-          const isSelected = preset.id === active.id;
+    <div className="simulator-shell" aria-label="Live Guardrail and Routing Simulator">
+      <div className="preset-strip" role="group" aria-label="Scenario presets">
+        {SIMULATOR_PRESETS.map((preset) => {
+          const isSelected = selectedPresetId === preset.id;
           return (
             <button
               key={preset.id}
               type="button"
-              role="tab"
-              aria-selected={isSelected}
-              className={`preset-btn tone-${preset.laneTone} ${isSelected ? 'is-selected' : ''}`}
-              onClick={() => setSelectedId(preset.id)}
+              className={`preset-chip tone-${preset.tone} ${isSelected ? 'is-selected' : ''}`}
+              onClick={() => handleSelectPreset(preset)}
             >
-              <span className="preset-label">{preset.label}</span>
-              <span className="preset-meta">{preset.shortRole}</span>
+              <span className="preset-chip-title">{preset.label}</span>
+              <span className="preset-chip-tag">{preset.tag}</span>
             </button>
           );
         })}
       </div>
 
-      <div className="sim-panel" role="tabpanel" aria-label={`${active.label} simulation`}>
-        <div className="sim-status-bar">
-          <div className="sim-badges">
-            <span className={`lane-pill tone-${active.laneTone}`}>
-              <ShieldIcon size={15} />
-              {active.laneTitle}
-            </span>
-            <span className={`memory-pill tone-${active.laneTone}`}>
-              {active.laneTone === 'private' ? <UnlockIcon size={15} /> : <LockIcon size={15} />}
-              {active.memoryState}
-            </span>
-          </div>
-          <p className="sim-summary-line">{active.summaryLine}</p>
-        </div>
+      <div className="sim-workbench">
+        <div className="sim-left-col">
+          <div className="editorial-card">
+            <div className="card-label-row">
+              <label htmlFor="caller-utterance" className="mono-label">
+                Live Caller Input
+              </label>
+              <span className="mono-hint">Updates engine in real time</span>
+            </div>
 
-        <div className="sim-grid">
-          <div className="sim-dialogue-col">
-            <h3 className="sim-col-title">How the call sounds</h3>
-            <div className="dialogue-list">
-              {active.dialogue.map((turn, index) => (
-                <div key={index} className={`dialogue-bubble role-${turn.role}`}>
-                  <div className="dialogue-speaker">{turn.speaker}</div>
-                  <p className="dialogue-text">{turn.text}</p>
-                </div>
+            <div className="profile-pills" role="radiogroup" aria-label="Caller identity">
+              {CALLER_PROFILES.map((profile) => (
+                <button
+                  key={profile.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={callerProfile === profile.id}
+                  className={`profile-pill ${callerProfile === profile.id ? 'is-active' : ''}`}
+                  onClick={() => handleProfileChange(profile.id)}
+                >
+                  {profile.label}
+                </button>
               ))}
             </div>
+
+            <textarea
+              id="caller-utterance"
+              className="caller-textarea"
+              rows={3}
+              value={utterance}
+              onChange={(e) => handleCustomUtterance(e.target.value)}
+              placeholder="Type what the caller asks (e.g., 'Read out the OTP', 'Is anyone home?', 'Mom calling about dinner')..."
+            />
+
+            <div className="sim-verdict-bar">
+              <span className={`verdict-pill tone-${result.laneTone}`}>
+                <ShieldIcon size={14} />
+                {result.laneTitle}
+              </span>
+              <span className={`verdict-pill memory-badge tone-${result.laneTone}`}>
+                {result.laneTone === 'private' ? <UnlockIcon size={14} /> : <LockIcon size={14} />}
+                {result.memoryState}
+              </span>
+            </div>
+
+            <div className="desk-reply-box">
+              <span className="mono-label">AI Voice Desk Response</span>
+              <p className="desk-reply-text">{result.deskReply}</p>
+            </div>
           </div>
 
-          <div className="sim-details-col">
-            <div className="detail-card">
-              <h3 className="sim-col-title">What the desk can see</h3>
-              <ul className="visibility-list">
-                {active.visibility.map((point, idx) => (
-                  <li key={idx}>{point}</li>
-                ))}
-              </ul>
-              <div className={`boundary-note tone-${active.laneTone}`}>
-                <span className="boundary-label">Privacy boundary</span>
-                <p>{active.blocked}</p>
-              </div>
+          <div className="editorial-card">
+            <div className="card-label-row">
+              <span className="mono-label">Tool Firewall</span>
+              <span className="mono-hint">
+                {result.tools.filter((t) => t.status !== 'ALLOWED').length} blocked
+              </span>
             </div>
 
-            <div className="telegram-card">
-              <div className="telegram-head">
-                <span className="telegram-channel">Telegram summary</span>
-                <span className="telegram-tag">Sent after call</span>
-              </div>
-              <div className="telegram-body">
-                <div className="telegram-heading">{active.telegram.heading}</div>
-                <ul className="telegram-lines">
-                  {active.telegram.lines.map((line, idx) => (
-                    <li key={idx}>{line}</li>
-                  ))}
-                </ul>
-              </div>
+            <ul className="tool-matrix">
+              {result.tools.map((tool) => {
+                const isAllowed = tool.status === 'ALLOWED';
+                const isTriggered = tool.status === 'BLOCKED_TRIGGER';
+                return (
+                  <li
+                    key={tool.id}
+                    className={`tool-row ${
+                      isAllowed ? 'is-allowed' : isTriggered ? 'is-triggered' : 'is-blocked'
+                    }`}
+                  >
+                    <div className="tool-info">
+                      <code className="tool-name">{tool.label}</code>
+                      <span className="tool-reason">{tool.reason}</span>
+                    </div>
+                    <span
+                      className={`tool-status-badge ${
+                        isAllowed ? 'is-allowed' : isTriggered ? 'is-triggered' : 'is-blocked'
+                      }`}
+                    >
+                      {isAllowed ? 'ALLOWED' : isTriggered ? 'BLOCKED !' : 'BLOCKED'}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+
+        <div className="sim-right-col">
+          <RoutingCanvas
+            lane={result.laneTone}
+            stage={routingStage}
+            eventLabel={result.matchedRules[0]}
+            isPlaying
+            compact
+          />
+
+          <div className="editorial-card json-card">
+            <div className="card-label-row">
+              <span className="mono-label">Live Telegram Desk Alert JSON</span>
+              <button
+                type="button"
+                className="copy-btn"
+                onClick={handleCopyJson}
+                aria-label="Copy Telegram alert JSON"
+              >
+                {copied ? <CheckIcon size={14} /> : <CopyIcon size={14} />}
+                <span>{copied ? 'Copied' : 'Copy JSON'}</span>
+              </button>
             </div>
+
+            <pre className="json-pre">
+              <code>{jsonString}</code>
+            </pre>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

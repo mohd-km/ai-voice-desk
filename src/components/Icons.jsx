@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function PlayIcon({ size = 20 }) {
+export function PlayIcon({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M8 5.5v13l10.5-6.5L8 5.5z" />
@@ -8,7 +8,7 @@ export function PlayIcon({ size = 20 }) {
   );
 }
 
-export function PauseIcon({ size = 20 }) {
+export function PauseIcon({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <rect x="6.5" y="5" width="4" height="14" rx="1" />
@@ -17,7 +17,7 @@ export function PauseIcon({ size = 20 }) {
   );
 }
 
-export function ReplayIcon({ size = 18 }) {
+export function ReplayIcon({ size = 17 }) {
   return (
     <svg
       width={size}
@@ -36,7 +36,7 @@ export function ReplayIcon({ size = 18 }) {
   );
 }
 
-export function ShieldIcon({ size = 16 }) {
+export function ShieldIcon({ size = 15 }) {
   return (
     <svg
       width={size}
@@ -55,7 +55,7 @@ export function ShieldIcon({ size = 16 }) {
   );
 }
 
-export function LockIcon({ size = 16 }) {
+export function LockIcon({ size = 15 }) {
   return (
     <svg
       width={size}
@@ -74,7 +74,7 @@ export function LockIcon({ size = 16 }) {
   );
 }
 
-export function UnlockIcon({ size = 16 }) {
+export function UnlockIcon({ size = 15 }) {
   return (
     <svg
       width={size}
@@ -93,7 +93,7 @@ export function UnlockIcon({ size = 16 }) {
   );
 }
 
-export function PhoneIcon({ size = 18 }) {
+export function CopyIcon({ size = 15 }) {
   return (
     <svg
       width={size}
@@ -101,17 +101,18 @@ export function PhoneIcon({ size = 18 }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.75"
+      strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0 1 22 16.92z" />
+      <rect x="9" y="9" width="11" height="11" rx="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
     </svg>
   );
 }
 
-export function SplitIcon({ size = 18 }) {
+export function CheckIcon({ size = 15 }) {
   return (
     <svg
       width={size}
@@ -119,20 +120,17 @@ export function SplitIcon({ size = 18 }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.75"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M16 3h5v5" />
-      <path d="M8 3H3v5" />
-      <path d="M12 22v-8.3a4 4 0 0 0-1.17-2.83L3 3" />
-      <path d="m15 9 6-6" />
+      <path d="M5 12.5l4.5 4.5L19 7.5" />
     </svg>
   );
 }
 
-export function CpuIcon({ size = 18 }) {
+export function VolumeIcon({ size = 16, muted = false }) {
   return (
     <svg
       width={size}
@@ -140,18 +138,25 @@ export function CpuIcon({ size = 18 }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.75"
+      strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <rect x="6" y="6" width="12" height="12" rx="2" />
-      <path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4" />
+      <path d="M11 5L6 9H2v6h4l5 4V5z" />
+      {muted ? (
+        <path d="M22 9l-6 6M16 9l6 6" />
+      ) : (
+        <>
+          <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+          <path d="M19 5a9 9 0 0 1 0 14" />
+        </>
+      )}
     </svg>
   );
 }
 
-export function SendIcon({ size = 18 }) {
+export function ChevronDownIcon({ size = 16 }) {
   return (
     <svg
       width={size}
@@ -159,32 +164,12 @@ export function SendIcon({ size = 18 }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.75"
+      strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M22 2 11 13" />
-      <path d="m22 2-7 20-4-9-9-4 20-7z" />
-    </svg>
-  );
-}
-
-export function ArrowRightIcon({ size = 16 }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M5 12h14" />
-      <path d="m13 6 6 6-6 6" />
+      <path d="M6 9l6 6 6-6" />
     </svg>
   );
 }
