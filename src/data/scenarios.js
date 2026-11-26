@@ -2,19 +2,19 @@ export const TRANSCRIPT_SEGMENTS = [
   {
     id: 'greet',
     start: 0,
-    end: 2.4,
+    end: 2.64,
     text: "Hello? Yes, speaking for Mohammed's desk."
   },
   {
     id: 'status',
-    start: 2.4,
-    end: 4.1,
+    start: 2.64,
+    end: 4.32,
     text: "He's tied up at the moment."
   },
   {
     id: 'capture',
-    start: 4.1,
-    end: 9.5,
+    start: 4.32,
+    end: 9.48,
     text: "Feel free to share your name and what the call is about, and I'll pass the note along to him right away."
   }
 ];

@@ -18,7 +18,7 @@ export default function VoicePlayer() {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(9.1);
+  const [duration, setDuration] = useState(9.4);
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
