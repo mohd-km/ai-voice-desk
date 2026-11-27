@@ -41,14 +41,14 @@ export const REAL_VOICE_TRANSCRIPT = [
 export const TWO_SPEAKER_CALL = {
   id: 'two-speaker-52s',
   title: 'Unknown Caller Asking for Address & OTP',
-  duration: 52,
+  duration: 43.2,
   callerLabel: 'Unknown Caller (+91 •••• 4821)',
   deskLabel: 'AI Voice Desk (Cloned Voice)',
   segments: [
     {
       id: 't1',
-      start: 0,
-      end: 6.5,
+      start: 0.0,
+      end: 5.75,
       speaker: 'AI Voice Desk',
       role: 'desk',
       stage: 'ring',
@@ -58,8 +58,8 @@ export const TWO_SPEAKER_CALL = {
     },
     {
       id: 't2',
-      start: 6.5,
-      end: 13.5,
+      start: 6.24,
+      end: 12.7,
       speaker: 'Unknown Caller',
       role: 'caller',
       stage: 'gate',
@@ -69,8 +69,8 @@ export const TWO_SPEAKER_CALL = {
     },
     {
       id: 't3',
-      start: 13.5,
-      end: 21.0,
+      start: 13.19,
+      end: 18.05,
       speaker: 'AI Voice Desk',
       role: 'desk',
       stage: 'firewall',
@@ -80,8 +80,8 @@ export const TWO_SPEAKER_CALL = {
     },
     {
       id: 't4',
-      start: 21.0,
-      end: 29.0,
+      start: 18.55,
+      end: 26.38,
       speaker: 'Unknown Caller',
       role: 'caller',
       stage: 'firewall',
@@ -91,8 +91,8 @@ export const TWO_SPEAKER_CALL = {
     },
     {
       id: 't5',
-      start: 29.0,
-      end: 38.5,
+      start: 26.88,
+      end: 34.43,
       speaker: 'AI Voice Desk',
       role: 'desk',
       stage: 'firewall',
@@ -102,8 +102,8 @@ export const TWO_SPEAKER_CALL = {
     },
     {
       id: 't6',
-      start: 38.5,
-      end: 44.5,
+      start: 34.93,
+      end: 38.71,
       speaker: 'Unknown Caller',
       role: 'caller',
       stage: 'firewall',
@@ -113,8 +113,8 @@ export const TWO_SPEAKER_CALL = {
     },
     {
       id: 't7',
-      start: 44.5,
-      end: 52.0,
+      start: 39.21,
+      end: 43.65,
       speaker: 'AI Voice Desk',
       role: 'desk',
       stage: 'telegram',

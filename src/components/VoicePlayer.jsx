@@ -15,55 +15,25 @@ function formatTime(seconds) {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-function playSubtleCue(audioCtxRef, freq = 520, duration = 0.08) {
-  try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    if (!audioCtxRef.current) {
-      audioCtxRef.current = new AudioCtx();
-    }
-    const ctx = audioCtxRef.current;
-    if (ctx.state === 'suspended') {
-      ctx.resume().catch(() => {});
-    }
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.03, ctx.currentTime + 0.015);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + duration + 0.02);
-  } catch {
-    // Ignore audio context restrictions
-  }
-}
-
 export default function VoicePlayer({ onRoutingStateChange }) {
-  const [mode, setMode] = useState('call'); // 'call' (52s two-speaker) | 'sample' (9s real MP3)
+  const [mode, setMode] = useState('call');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [realDuration, setRealDuration] = useState(9.1);
+  const [trackDuration, setTrackDuration] = useState(TWO_SPEAKER_CALL.duration);
   const [isMuted, setIsMuted] = useState(false);
   const [audioError, setAudioError] = useState(false);
 
   const audioRef = useRef(null);
-  const audioCtxRef = useRef(null);
-  const rafRef = useRef(null);
-  const lastFrameRef = useRef(null);
-  const lastSegIdRef = useRef(null);
 
-  const duration = mode === 'call' ? TWO_SPEAKER_CALL.duration : realDuration;
+  const audioSrc = mode === 'call' ? './audio/two-speaker-call.mp3' : './audio/voice-desk-demo.mp3';
+  const fallbackDuration = mode === 'call' ? TWO_SPEAKER_CALL.duration : 9.1;
+  const duration = trackDuration > 0 ? trackDuration : fallbackDuration;
   const segments = mode === 'call' ? TWO_SPEAKER_CALL.segments : REAL_VOICE_TRANSCRIPT;
 
   const activeSegment =
     segments.find((seg) => currentTime >= seg.start && currentTime < seg.end) ||
     (currentTime >= duration ? segments[segments.length - 1] : segments[0]);
 
-  // Notify parent routing diagram whenever active segment or play state changes
   useEffect(() => {
     if (!onRoutingStateChange || !activeSegment) return;
     onRoutingStateChange({
@@ -74,89 +44,28 @@ export default function VoicePlayer({ onRoutingStateChange }) {
     });
   }, [activeSegment, isPlaying, onRoutingStateChange]);
 
-  // Subtle cue when switching transcript turns in 52s call mode
-  useEffect(() => {
-    if (mode !== 'call' || !isPlaying || isMuted || !activeSegment) return;
-    if (lastSegIdRef.current !== activeSegment.id) {
-      lastSegIdRef.current = activeSegment.id;
-      const freq =
-        activeSegment.stage === 'firewall'
-          ? 340
-          : activeSegment.stage === 'telegram'
-            ? 660
-            : activeSegment.role === 'desk'
-              ? 520
-              : 420;
-      playSubtleCue(audioCtxRef, freq, 0.07);
-    }
-  }, [mode, isPlaying, isMuted, activeSegment]);
-
-  // Timer loop for 52s two-speaker call mode
-  useEffect(() => {
-    if (mode !== 'call' || !isPlaying) {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      lastFrameRef.current = null;
-      return;
-    }
-
-    const tick = (now) => {
-      if (lastFrameRef.current === null) {
-        lastFrameRef.current = now;
-      }
-      const delta = (now - lastFrameRef.current) / 1000;
-      lastFrameRef.current = now;
-
-      setCurrentTime((prev) => {
-        const next = prev + delta;
-        if (next >= TWO_SPEAKER_CALL.duration) {
-          setIsPlaying(false);
-          return TWO_SPEAKER_CALL.duration;
-        }
-        return next;
-      });
-
-      rafRef.current = requestAnimationFrame(tick);
-    };
-
-    rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, [mode, isPlaying]);
-
-  // Native audio listeners for 9s real voice sample mode
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const onLoadedMetadata = () => {
       if (Number.isFinite(audio.duration) && audio.duration > 0) {
-        setRealDuration(audio.duration);
+        setTrackDuration(audio.duration);
       }
     };
-    const onTimeUpdate = () => {
-      if (mode === 'sample') setCurrentTime(audio.currentTime);
-    };
+    const onTimeUpdate = () => setCurrentTime(audio.currentTime);
     const onPlay = () => {
-      if (mode === 'sample') {
-        setIsPlaying(true);
-        setAudioError(false);
-      }
+      setIsPlaying(true);
+      setAudioError(false);
     };
-    const onPause = () => {
-      if (mode === 'sample') setIsPlaying(false);
-    };
+    const onPause = () => setIsPlaying(false);
     const onEnded = () => {
-      if (mode === 'sample') {
-        setIsPlaying(false);
-        setCurrentTime(audio.duration || realDuration);
-      }
+      setIsPlaying(false);
+      setCurrentTime(audio.duration || fallbackDuration);
     };
     const onError = () => {
-      if (mode === 'sample') {
-        setIsPlaying(false);
-        setAudioError(true);
-      }
+      setIsPlaying(false);
+      setAudioError(true);
     };
 
     audio.addEventListener('loadedmetadata', onLoadedMetadata);
@@ -174,7 +83,7 @@ export default function VoicePlayer({ onRoutingStateChange }) {
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('error', onError);
     };
-  }, [mode, realDuration]);
+  }, [mode, fallbackDuration]);
 
   const switchMode = (nextMode) => {
     if (nextMode === mode) return;
@@ -184,25 +93,12 @@ export default function VoicePlayer({ onRoutingStateChange }) {
     }
     setIsPlaying(false);
     setCurrentTime(0);
+    setTrackDuration(nextMode === 'call' ? TWO_SPEAKER_CALL.duration : 9.1);
     setAudioError(false);
-    lastSegIdRef.current = null;
     setMode(nextMode);
   };
 
   const togglePlayback = async () => {
-    if (mode === 'call') {
-      if (isPlaying) {
-        setIsPlaying(false);
-        return;
-      }
-      if (currentTime >= duration - 0.1) {
-        setCurrentTime(0);
-        lastSegIdRef.current = null;
-      }
-      setIsPlaying(true);
-      return;
-    }
-
     const audio = audioRef.current;
     if (!audio) return;
     audio.muted = isMuted;
@@ -222,15 +118,10 @@ export default function VoicePlayer({ onRoutingStateChange }) {
   };
 
   const handleReplay = async () => {
-    setCurrentTime(0);
-    lastSegIdRef.current = null;
-    if (mode === 'call') {
-      setIsPlaying(true);
-      return;
-    }
     const audio = audioRef.current;
     if (!audio) return;
     audio.currentTime = 0;
+    setCurrentTime(0);
     audio.muted = isMuted;
     try {
       await audio.play();
@@ -242,7 +133,7 @@ export default function VoicePlayer({ onRoutingStateChange }) {
   const seekTo = (nextTime) => {
     const clamped = Math.min(duration, Math.max(0, nextTime));
     setCurrentTime(clamped);
-    if (mode === 'sample' && audioRef.current) {
+    if (audioRef.current) {
       audioRef.current.currentTime = clamped;
     }
   };
@@ -265,7 +156,7 @@ export default function VoicePlayer({ onRoutingStateChange }) {
 
   return (
     <div className="player-card" aria-label="Two-speaker call player">
-      <audio ref={audioRef} src="./audio/voice-desk-demo.mp3" preload="metadata" />
+      <audio key={mode} ref={audioRef} src={audioSrc} preload="metadata" />
 
       <div className="player-top">
         <div className="player-mode-switch" role="tablist" aria-label="Audio track mode">
@@ -276,7 +167,7 @@ export default function VoicePlayer({ onRoutingStateChange }) {
             className={`mode-pill ${mode === 'call' ? 'is-active' : ''}`}
             onClick={() => switchMode('call')}
           >
-            52s scripted scam call
+            43s delivery call demo
           </button>
           <button
             type="button"
@@ -367,7 +258,7 @@ export default function VoicePlayer({ onRoutingStateChange }) {
             type="button"
             className="icon-btn"
             onClick={toggleMute}
-            aria-label={isMuted ? 'Unmute audio cues' : 'Mute audio cues'}
+            aria-label={isMuted ? 'Unmute audio' : 'Mute audio'}
             title={isMuted ? 'Unmute' : 'Mute'}
           >
             <VolumeIcon size={16} muted={isMuted} />
