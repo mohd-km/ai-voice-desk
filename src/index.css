@@ -120,19 +120,6 @@ body {
   color: var(--ink);
 }
 
-.brand-sep {
-  width: 1px;
-  height: 14px;
-  background: var(--border-strong);
-  flex-shrink: 0;
-}
-
-.brand-by {
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: var(--ink-secondary);
-}
-
 .metric-strip {
   display: flex;
   flex-wrap: wrap;

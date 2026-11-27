@@ -27,8 +27,6 @@ export default function App() {
               <BrandMark size={28} />
             </span>
             <span className="brand-name">AI Voice Desk</span>
-            <span className="brand-sep" aria-hidden="true" />
-            <span className="brand-by">Mohammed KM</span>
           </div>
 
           <div className="metric-strip" aria-label="Verified system metrics">
