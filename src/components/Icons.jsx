@@ -1,5 +1,34 @@
 import React from 'react';
 
+export function BrandMark({ size = 28 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 28 28"
+      fill="none"
+      aria-hidden="true"
+      className="brand-mark-svg"
+    >
+      <rect
+        x="1.25"
+        y="1.25"
+        width="25.5"
+        height="25.5"
+        rx="6.75"
+        fill="#ffffff"
+        stroke="#111111"
+        strokeWidth="1.4"
+      />
+      <line x1="8" y1="12" x2="8" y2="16" stroke="#111111" strokeWidth="1.6" strokeLinecap="round" />
+      <line x1="11" y1="9" x2="11" y2="19" stroke="#111111" strokeWidth="1.6" strokeLinecap="round" />
+      <line x1="14" y1="6.75" x2="14" y2="21.25" stroke="#111111" strokeWidth="1.65" strokeLinecap="round" />
+      <line x1="17" y1="9" x2="17" y2="19" stroke="#111111" strokeWidth="1.6" strokeLinecap="round" />
+      <line x1="20" y1="12" x2="20" y2="16" stroke="#111111" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function PlayIcon({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

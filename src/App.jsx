@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import CallerSimulator from './components/CallerSimulator';
-import { ChevronDownIcon } from './components/Icons';
+import { BrandMark, ChevronDownIcon } from './components/Icons';
 import RoutingCanvas from './components/RoutingCanvas';
 import VoicePlayer from './components/VoicePlayer';
 import { ARCHITECTURE_STEPS, HERO_METRICS } from './engine/guardrailEngine';
@@ -23,8 +23,11 @@ export default function App() {
       <header className="topbar">
         <div className="topbar-inner">
           <div className="brand">
-            <span className="brand-dot" aria-hidden="true" />
+            <span className="brand-mark" aria-hidden="true">
+              <BrandMark size={28} />
+            </span>
             <span className="brand-name">AI Voice Desk</span>
+            <span className="brand-sep" aria-hidden="true" />
             <span className="brand-by">Mohammed KM</span>
           </div>
 
