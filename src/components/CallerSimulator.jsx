@@ -2,7 +2,9 @@ import React, { useMemo, useState } from 'react';
 import {
   CALLER_PROFILES,
   evaluateCallerScenario,
-  SIMULATOR_PRESETS
+  RULE_PLAIN,
+  SIMULATOR_PRESETS,
+  TOOL_PLAIN
 } from '../engine/guardrailEngine';
 import { CheckIcon, CopyIcon, LockIcon, ShieldIcon, UnlockIcon } from './Icons';
 import RoutingCanvas from './RoutingCanvas';
@@ -83,9 +85,9 @@ export default function CallerSimulator() {
           <div className="editorial-card">
             <div className="card-label-row">
               <label htmlFor="caller-utterance" className="mono-label">
-                Live Caller Input
+                What the caller says
               </label>
-              <span className="mono-hint">Updates engine in real time</span>
+              <span className="mono-hint">Results update as you type</span>
             </div>
 
             <div className="profile-pills" role="radiogroup" aria-label="Caller identity">
@@ -124,19 +126,20 @@ export default function CallerSimulator() {
             </div>
 
             <div className="desk-reply-box">
-              <span className="mono-label">AI Voice Desk Response</span>
+              <span className="mono-label">What the desk says back</span>
               <p className="desk-reply-text">{result.deskReply}</p>
             </div>
           </div>
 
           <div className="editorial-card">
             <div className="card-label-row">
-              <span className="mono-label">Tool Firewall</span>
+              <span className="mono-label">Actions it may take (tool firewall)</span>
               <span className="mono-hint">
                 {result.tools.filter((t) => t.status !== 'ALLOWED').length} blocked
               </span>
             </div>
 
+            <p className="card-explain">Each row is something the desk could do. Guests get only the last one; “BLOCKED !” means this call actually tried it.</p>
             <ul className="tool-matrix">
               {result.tools.map((tool) => {
                 const isAllowed = tool.status === 'ALLOWED';
@@ -149,6 +152,7 @@ export default function CallerSimulator() {
                     }`}
                   >
                     <div className="tool-info">
+                      <span className="tool-plain">{TOOL_PLAIN[tool.id] || tool.label}</span>
                       <code className="tool-name">{tool.label}</code>
                       <span className="tool-reason">{tool.reason}</span>
                     </div>
@@ -170,14 +174,14 @@ export default function CallerSimulator() {
           <RoutingCanvas
             lane={result.laneTone}
             stage={routingStage}
-            eventLabel={result.matchedRules[0]}
+            eventLabel={RULE_PLAIN[result.matchedRules[0]] || result.matchedRules[0]}
             isPlaying
             compact
           />
 
           <div className="editorial-card json-card">
             <div className="card-label-row">
-              <span className="mono-label">Live Telegram Desk Alert JSON</span>
+              <span className="mono-label">Summary sent to his phone (Telegram, JSON)</span>
               <button
                 type="button"
                 className="copy-btn"
@@ -189,6 +193,7 @@ export default function CallerSimulator() {
               </button>
             </div>
 
+            <p className="card-explain">JSON is a tidy text format that apps can read. Each line is one labelled fact: the lane, the risk level, which rules fired and which actions were blocked.</p>
             <pre className="json-pre">
               <code>{jsonString}</code>
             </pre>

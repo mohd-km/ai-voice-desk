@@ -1248,6 +1248,40 @@ body {
   color: var(--ink);
 }
 
+/* Plain-English story card */
+.story-card {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  margin-bottom: 20px;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-left: 3px solid #0f6b5e;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.story-card p { margin: 0; }
+.story-card strong { color: var(--ink); }
+.story-try { color: var(--ink); }
+.card-explain {
+  margin: -4px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-secondary);
+  overflow-wrap: anywhere;
+}
+.tool-plain {
+  display: block;
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 14px;
+}
+
 /* Footer */
 .footer {
   margin-top: auto;

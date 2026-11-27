@@ -1,8 +1,8 @@
 export const HERO_METRICS = [
-  { value: '2.0s', label: 'Memory recall' },
-  { value: '5', label: 'Languages' },
-  { value: '$0', label: 'Extra server spend' },
-  { value: '2-lane', label: 'Hard isolation' }
+  { value: '2.0s', label: 'to recall a fact' },
+  { value: '5', label: 'languages' },
+  { value: '$0', label: 'extra server cost' },
+  { value: '2', label: 'separate caller lanes' }
 ];
 
 export const REAL_VOICE_TRANSCRIPT = [
@@ -183,33 +183,53 @@ export const SIMULATOR_PRESETS = [
 export const ARCHITECTURE_STEPS = [
   {
     number: '01',
-    title: 'Cloned Voice Pickup',
+    title: 'Answer in his voice',
     caption: '5 languages, calm intake',
     description:
-      'Incoming calls are answered in Mohammed’s cloned voice without exposing private context.'
+      'Calls are answered by a computer voice built to sound like Mohammed (a cloned text-to-speech voice). It hears the caller, turns their words into text, and replies without revealing anything private.'
   },
   {
     number: '02',
-    title: 'Two-Lane Router',
-    caption: 'Strict identity split',
+    title: 'Pick a lane',
+    caption: 'Who is calling decides',
     description:
-      'Verified owner identity enters the Private Lane. All other callers remain inside an isolated Guest Lane.'
+      'If the caller is confirmed to be Mohammed, the call enters the private lane. Every other caller, family included, stays in the guest lane, which is walled off from his private data.'
   },
   {
     number: '03',
-    title: 'Tool Firewall',
-    caption: 'Zero-trust guardrails',
+    title: 'Block risky actions',
+    caption: 'Tool firewall',
     description:
-      'OTP requests, home addresses, and private memory queries are deterministically blocked outside the owner lane.'
+      'Requests for bank codes (OTPs), the home address or his private notes are refused by fixed rules outside the private lane. Same request, same refusal, every time.'
   },
   {
     number: '04',
-    title: 'Telegram Desk Alert',
-    caption: 'Structured JSON summary',
+    title: 'Send a summary',
+    caption: 'Telegram message',
     description:
-      'Every call ends with a concise, structured Telegram alert so Mohammed acts only on what matters.'
+      'Every call ends with a short message on Telegram: who called, how risky it was and what was asked, so Mohammed only acts on what matters.'
   }
 ];
+
+export const TOOL_PLAIN = {
+  personal_memory_read: 'Read his personal notes',
+  calendar_and_tasks: 'See calendar, add tasks',
+  home_address_lookup: 'Look up home address',
+  otp_and_auth_codes: 'Read out bank or login codes',
+  telegram_desk_alert: 'Send summary to Mohammed'
+};
+
+export const RULE_PLAIN = {
+  RULE_BLOCK_OTP_EXFIL: 'Asked for a code: blocked',
+  RULE_BLOCK_HOME_ADDRESS: 'Asked for address: blocked',
+  RULE_FLAG_FINANCIAL_PROBE: 'Money or bank words: flagged',
+  RULE_SCREEN_PROMO_SPAM: 'Sales pitch: declined',
+  RULE_DELIVERY_DROP_PROTOCOL: 'Delivery: leave at gate',
+  RULE_FAMILY_WARM_HANDOFF: 'Family: pass the message on',
+  RULE_PERSONAL_MEMORY_INTENT: 'Asked about calendar or notes',
+  RULE_URGENCY_ESCALATION: 'Urgent: alert straight away',
+  RULE_DEFAULT_GUEST_INTAKE: 'Take a message'
+};
 
 const PATTERNS = {
   otp: /\b(otp|one[- ]?time|verification code|auth code|passcode|pin|cvv|password|6[- ]?digit|six[- ]?digit)\b/i,

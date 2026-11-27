@@ -27,7 +27,7 @@ export default function RoutingCanvas({
         <div className="routing-status-group">
           <span className={`status-dot tone-${lane} ${isPlaying ? 'is-pulsing' : ''}`} />
           <span className="routing-lane-name">
-            {isPrivate ? 'Private Owner Lane' : isBlocked ? 'Isolated Guest Lane — Firewall Active' : 'Isolated Guest Lane'}
+            {isPrivate ? 'Private lane: Mohammed only' : isBlocked ? 'Guest lane: risky request blocked' : 'Guest lane: everyone else'}
           </span>
         </div>
         <span className="routing-event-mono">{eventLabel}</span>
@@ -67,7 +67,7 @@ export default function RoutingCanvas({
             className="svg-mono-micro"
             fill="#666666"
           >
-            HARD ISOLATION
+            KEPT APART
           </text>
 
           {/* Path: Incoming -> Gate */}
@@ -122,10 +122,10 @@ export default function RoutingCanvas({
               strokeWidth={stageIndex === 0 ? '1.8' : '1.2'}
             />
             <text x="50" y="29" textAnchor="middle" className="svg-node-title">
-              Incoming
+              Call in
             </text>
             <text x="50" y="47" textAnchor="middle" className="svg-mono-micro" fill="#555555">
-              Voice Pickup
+              Answered
             </text>
           </g>
 
@@ -140,7 +140,7 @@ export default function RoutingCanvas({
               strokeWidth={stageIndex === 1 ? '1.8' : '1.2'}
             />
             <text x="38" y="29" textAnchor="middle" className="svg-node-title">
-              ID Gate
+              ID check
             </text>
             <text x="38" y="47" textAnchor="middle" className="svg-mono-micro" fill={activeColor}>
               {isPrivate ? 'OWNER' : 'GUEST'}
@@ -163,7 +163,7 @@ export default function RoutingCanvas({
               className="svg-node-title"
               fill={isPrivate ? '#111111' : '#888888'}
             >
-              Private Owner Lane
+              Private lane (owner)
             </text>
             <text
               x="16"
@@ -171,7 +171,7 @@ export default function RoutingCanvas({
               className="svg-mono-micro"
               fill={isPrivate ? '#0f6b5e' : '#999999'}
             >
-              {isPrivate ? 'UNLOCKED · 2.0s Memory + Tasks' : 'SEALED · Zero Guest Access'}
+              {isPrivate ? 'OPEN · memory + calendar' : 'LOCKED · no guest access'}
             </text>
           </g>
 
@@ -191,7 +191,7 @@ export default function RoutingCanvas({
               className="svg-node-title"
               fill={!isPrivate ? '#111111' : '#888888'}
             >
-              {isBlocked ? 'Guest Lane + Tool Firewall' : 'Isolated Guest Lane'}
+              {isBlocked ? 'Guest lane + block list' : 'Guest lane'}
             </text>
             <text
               x="16"
@@ -200,10 +200,10 @@ export default function RoutingCanvas({
               fill={!isPrivate ? activeColor : '#999999'}
             >
               {isBlocked
-                ? 'BLOCKED · OTP / Address / Memory'
+                ? 'BLOCKED · codes, address, notes'
                 : isGuest
-                  ? 'ACTIVE · Safe Intake Only'
-                  : 'BYPASSED · Verified Owner'}
+                  ? 'ACTIVE · takes a message only'
+                  : 'SKIPPED · owner confirmed'}
             </text>
           </g>
 
@@ -218,10 +218,10 @@ export default function RoutingCanvas({
               strokeWidth={stageIndex === 3 ? '1.8' : '1.2'}
             />
             <text x="63" y="29" textAnchor="middle" className="svg-node-title">
-              Telegram Desk
+              Telegram
             </text>
             <text x="63" y="47" textAnchor="middle" className="svg-mono-micro" fill={activeColor}>
-              JSON Alert
+              Summary sent
             </text>
           </g>
         </svg>

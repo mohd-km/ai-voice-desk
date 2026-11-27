@@ -5,6 +5,35 @@ import RoutingCanvas from './components/RoutingCanvas';
 import VoicePlayer from './components/VoicePlayer';
 import { ARCHITECTURE_STEPS, HERO_METRICS } from './engine/guardrailEngine';
 
+const STORIES = {
+  player: {
+    problem:
+      'A stranger rings pretending to be a courier and tries to get Mohammed’s flat number and a bank code.',
+    how:
+      'Every call goes into one of two lanes. Only Mohammed gets the private lane with his memory and calendar. Everyone else stays in the guest lane, where a block list of risky actions (the tool firewall) stops anything sensitive. When the call ends, a short summary goes to his Telegram.',
+    tryThis:
+      'Press the round play button. At 0:21, when the caller asks for the code, the diagram’s dot turns red and runs along the lower guest lane.'
+  },
+  simulator: {
+    problem: 'See exactly what the desk will and will not do for different callers.',
+    how:
+      'Your text is checked for warning words (like “OTP”, “address” or “parcel”) and combined with who is calling. That decides the lane, the spoken reply, which actions are allowed, and the summary sent to Mohammed. Fixed rules, not guesswork, so the same call always gets the same answer.',
+    tryThis:
+      'Click “Owner Direct Call”, then switch the caller to “Unknown Number”: the memory and calendar rows flip from ALLOWED to BLOCKED.'
+  }
+};
+
+function StoryCard({ tab }) {
+  const s = STORIES[tab] || STORIES.player;
+  return (
+    <div className="story-card" aria-label="What this view shows">
+      <p><strong>The problem.</strong> {s.problem}</p>
+      <p><strong>How it works.</strong> {s.how}</p>
+      <p className="story-try"><strong>Try this first.</strong> {s.tryThis}</p>
+    </div>
+  );
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('player'); // 'player' | 'simulator'
   const [routingState, setRoutingState] = useState({
@@ -48,7 +77,7 @@ export default function App() {
                 Two-Lane Cloned Voice Desk
               </h1>
               <p className="hero-subtitle">
-                Answers calls in Mohammed’s voice, isolates private memory from guests, and dispatches structured Telegram alerts.
+                Scam callers often pose as couriers or banks to get a home address or a bank code. This desk answers the phone in a copy of Mohammed’s voice, never gives strangers anything private, and sends him a short summary after every call.
               </p>
             </div>
 
@@ -60,7 +89,7 @@ export default function App() {
                 className={`view-tab ${activeTab === 'player' ? 'is-active' : ''}`}
                 onClick={() => setActiveTab('player')}
               >
-                Routing &amp; Call Player
+                Listen to a call
               </button>
               <button
                 type="button"
@@ -69,13 +98,14 @@ export default function App() {
                 className={`view-tab ${activeTab === 'simulator' ? 'is-active' : ''}`}
                 onClick={() => setActiveTab('simulator')}
               >
-                Guardrail &amp; JSON Simulator
+                Test the safety rules
               </button>
             </div>
           </div>
         </section>
 
         <section className="workspace" aria-live="polite">
+          <StoryCard tab={activeTab} />
           {activeTab === 'player' ? (
             <div className="player-workspace">
               <RoutingCanvas
@@ -94,7 +124,7 @@ export default function App() {
         <section className="spec-drawers" aria-label="Architecture and guardrail reference">
           <details className="editorial-drawer">
             <summary className="drawer-summary">
-              <span>Read more: Four-Step Architecture &amp; Privacy Boundaries</span>
+              <span>Read more: the four steps and the privacy rules</span>
               <ChevronDownIcon size={16} />
             </summary>
             <div className="drawer-body">
@@ -113,10 +143,10 @@ export default function App() {
 
               <div className="spec-notes">
                 <p>
-                  <strong>Verified benchmarks:</strong> 2.0s personal memory recall in the Private Owner Lane, 5 supported languages, and $0 extra server spend by reusing existing infrastructure.
+                  <strong>Headline numbers:</strong> about 2.0 seconds to look up a personal fact when Mohammed himself calls (memory recall time), 5 languages spoken, and $0 extra server cost because it reuses computers he already runs.
                 </p>
                 <p>
-                  <strong>Hard security invariants:</strong> OTPs and verification codes are permanently disabled on the voice desk; home address and calendar lookups are strictly blocked outside verified owner sessions.
+                  <strong>Rules that never bend:</strong> the desk can never read out one-time passwords (OTPs, the codes banks text you). It only looks up the home address or calendar when the caller is confirmed to be Mohammed.
                 </p>
               </div>
             </div>
@@ -127,7 +157,7 @@ export default function App() {
       <footer className="footer">
         <div className="footer-inner">
           <span className="footer-brand">AI Voice Desk — Mohammed KM</span>
-          <span className="footer-meta">100% client-side simulation · Zero external APIs</span>
+          <span className="footer-meta">Everything here runs in your browser. No real calls or messages are sent.</span>
         </div>
       </footer>
     </div>

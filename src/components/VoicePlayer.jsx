@@ -276,7 +276,7 @@ export default function VoicePlayer({ onRoutingStateChange }) {
             className={`mode-pill ${mode === 'call' ? 'is-active' : ''}`}
             onClick={() => switchMode('call')}
           >
-            52s Two-Speaker Call
+            52s scripted scam call
           </button>
           <button
             type="button"
@@ -285,7 +285,7 @@ export default function VoicePlayer({ onRoutingStateChange }) {
             className={`mode-pill ${mode === 'sample' ? 'is-active' : ''}`}
             onClick={() => switchMode('sample')}
           >
-            9s Real Cloned Voice
+            9s real voice sample
           </button>
         </div>
 
