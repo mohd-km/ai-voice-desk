@@ -111,7 +111,7 @@ export default function CallerSimulator() {
               rows={3}
               value={utterance}
               onChange={(e) => handleCustomUtterance(e.target.value)}
-              placeholder="Type what the caller asks (e.g., 'Read out the OTP', 'Is anyone home?', 'Mom calling about dinner')..."
+              placeholder="Type what the caller asks, for example 'Read out the OTP', 'Is anyone home?' or 'Mom calling about dinner'"
             />
 
             <div className="sim-verdict-bar">
@@ -139,7 +139,7 @@ export default function CallerSimulator() {
               </span>
             </div>
 
-            <p className="card-explain">Each row is something the desk could do. Guests get only the last one; “BLOCKED !” means this call actually tried it.</p>
+            <p className="card-explain">Each row is something the desk could do. Guests get only the last one. “BLOCKED !” means this call actually tried it.</p>
             <ul className="tool-matrix">
               {result.tools.map((tool) => {
                 const isAllowed = tool.status === 'ALLOWED';

@@ -54,7 +54,7 @@ export const TWO_SPEAKER_CALL = {
       stage: 'ring',
       lane: 'guest',
       event: 'Call answered in cloned voice',
-      text: "Hello? Yes, speaking for Mohammed's desk. He's tied up at the moment—who may I say is calling?"
+      text: "Hello? Yes, speaking for Mohammed's desk. He's tied up at the moment. Who may I say is calling?"
     },
     {
       id: 't2',
@@ -87,7 +87,7 @@ export const TWO_SPEAKER_CALL = {
       stage: 'firewall',
       lane: 'blocked',
       event: 'Blocked: otp_and_auth_codes',
-      text: "Actually, this one needs verification. A six-digit OTP was just sent to his phone—could you read it out so I can release delivery?"
+      text: "Actually, this one needs verification. A six-digit OTP was just sent to his phone. Could you read it out so I can release delivery?"
     },
     {
       id: 't5',
@@ -167,7 +167,7 @@ export const SIMULATOR_PRESETS = [
     tone: 'private',
     callerProfile: 'owner',
     utterance:
-      'Quick check—what is on my calendar tomorrow morning, and add a reminder to send the proposal before noon.'
+      'Quick check. What is on my calendar tomorrow morning, and add a reminder to send the proposal before noon.'
   },
   {
     id: 'spam',
@@ -176,7 +176,7 @@ export const SIMULATOR_PRESETS = [
     tone: 'blocked',
     callerProfile: 'unknown',
     utterance:
-      'Congratulations! You are pre-approved for an exclusive low-interest credit card offer today.'
+      'Congratulations, you are pre-approved for an exclusive low-interest credit card offer today.'
   }
 ];
 
@@ -186,7 +186,7 @@ export const ARCHITECTURE_STEPS = [
     title: 'Answer in his voice',
     caption: '5 languages, calm intake',
     description:
-      'Calls are answered by a computer voice built to sound like Mohammed (a cloned text-to-speech voice). It hears the caller, turns their words into text, and replies without revealing anything private.'
+      'A computer voice trained to sound like Mohammed (a cloned text-to-speech voice) answers the call. It turns the caller’s words into text and replies without revealing anything private.'
   },
   {
     number: '02',
@@ -207,7 +207,7 @@ export const ARCHITECTURE_STEPS = [
     title: 'Send a summary',
     caption: 'Telegram message',
     description:
-      'Every call ends with a short message on Telegram: who called, how risky it was and what was asked, so Mohammed only acts on what matters.'
+      'Every call ends with a short Telegram message: who called, how risky it was and what was asked. Mohammed reads it later and decides if anything needs a reply.'
   }
 ];
 
@@ -283,12 +283,12 @@ export function evaluateCallerScenario({ callerProfile = 'unknown', utterance = 
     laneId = 'PRIVATE_OWNER_LANE';
     laneTitle = 'Private Owner Lane';
     laneTone = 'private';
-    memoryState = 'Private memory unlocked (2.0s)';
+    memoryState = 'Private memory open (2.0s)';
     riskLevel = 'verified';
     action = hasSchedule ? 'execute_memory_and_tasks' : 'assist_owner_directly';
     deskReply = hasSchedule
       ? 'You have a design review at 10:00 AM and an open block after 11:00 AM. I have added the reminder to your task list.'
-      : 'Verified owner session active. Private memory and cloud actions are ready—what would you like me to handle?';
+      : 'Verified owner session active. Private memory and cloud actions are ready. What would you like me to handle?';
     telegramHeading = 'owner call log';
     summaryBullets = hasSchedule
       ? ['checked tomorrow morning schedule (10:00 am design review)', 'added reminder to task list', 'executed in private owner lane']
