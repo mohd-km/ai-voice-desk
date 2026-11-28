@@ -1,11 +1,20 @@
 import React, { useCallback, useState } from 'react';
 import CallerSimulator from './components/CallerSimulator';
+import OwnerLine from './components/OwnerLine';
 import { BrandMark, ChevronDownIcon } from './components/Icons';
 import RoutingCanvas from './components/RoutingCanvas';
 import VoicePlayer from './components/VoicePlayer';
 import { ARCHITECTURE_STEPS, HERO_METRICS } from './engine/guardrailEngine';
 
 const STORIES = {
+  owner: {
+    problem:
+      'A phone assistant that can only take messages is a receptionist. Mohammed wanted to ring his own line with the laptop closed and get real work done.',
+    how:
+      'On his own number the call opens the private lane. Tasks run on the cloud computer and move to his laptop only when a site blocks the cloud. He can ask how far along a task is, answer its questions without hanging up, run saved routines and say \u201cmake it a doc\u201d. While he talks, Telegram stays quiet.',
+    tryThis:
+      'Pick \u201cA site blocks the cloud\u201d and press Start the call. Watch the task move to the laptop, then answer the question and hang up.'
+  },
   player: {
     problem:
       'A stranger rings pretending to be a courier and tries to get Mohammed’s flat number and a bank code.',
@@ -35,7 +44,7 @@ function StoryCard({ tab }) {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('player'); // 'player' | 'simulator'
+  const [activeTab, setActiveTab] = useState('player'); // 'player' | 'simulator' | 'owner'
   const [routingState, setRoutingState] = useState({
     lane: 'guest',
     stage: 'ring',
@@ -69,7 +78,7 @@ export default function App() {
                 Two-Lane Cloned Voice Desk
               </h1>
               <p className="hero-subtitle">
-                Scam callers often pose as couriers or banks to get a home address or a bank code. This desk answers the phone in a copy of Mohammed’s voice. Strangers get nothing private, and he gets a short summary after every call.
+                Scam callers often pose as couriers or banks to get a home address or a bank code. This desk answers the phone in a copy of Mohammed’s voice. Strangers get nothing private. When Mohammed rings it himself, the same number runs real tasks for him with his laptop closed.
               </p>
               <div className="metric-strip" aria-label="Verified system metrics">
                 {HERO_METRICS.map((m) => (
@@ -100,6 +109,15 @@ export default function App() {
               >
                 Test the safety rules
               </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'owner'}
+                className={`view-tab ${activeTab === 'owner' ? 'is-active' : ''}`}
+                onClick={() => setActiveTab('owner')}
+              >
+                The owner line
+              </button>
             </div>
           </div>
         </section>
@@ -116,15 +134,17 @@ export default function App() {
               />
               <VoicePlayer onRoutingStateChange={handleRoutingUpdate} />
             </div>
-          ) : (
+          ) : activeTab === 'simulator' ? (
             <CallerSimulator />
+          ) : (
+            <OwnerLine />
           )}
         </section>
 
         <section className="spec-drawers" aria-label="Architecture and guardrail reference">
           <details className="editorial-drawer">
             <summary className="drawer-summary">
-              <span>Read more: the four steps and the privacy rules</span>
+              <span>Read more: the six steps and the privacy rules</span>
               <ChevronDownIcon size={16} />
             </summary>
             <div className="drawer-body">
@@ -143,11 +163,9 @@ export default function App() {
 
               <div className="spec-notes">
                 <p>
-                  <strong>Headline numbers:</strong> about 2.0 seconds to look up a personal fact when Mohammed himself calls (memory recall time), 5 languages spoken, and $0 extra server cost because it reuses computers he already runs.
-                </p>
+                  <strong>Headline numbers:</strong> replies start in about a second, guests are answered in 7 languages, the guest lane has 0 tools, and his own calls can run for up to 30 minutes.</p>
                 <p>
-                  <strong>Rules that never bend:</strong> the desk can never read out one-time passwords (OTPs, the codes banks text you). It only looks up the home address or calendar when the caller is confirmed to be Mohammed.
-                </p>
+                  <strong>Rules that never bend:</strong> the desk never reads out one-time passwords (OTPs, the codes banks text you). The home address, calendar and tasks open only when the caller is confirmed to be Mohammed. Even on his own line, payments wait for his approval and outgoing messages are read back to him first.</p>
               </div>
             </div>
           </details>

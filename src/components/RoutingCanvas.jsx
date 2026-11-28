@@ -125,7 +125,7 @@ export default function RoutingCanvas({
               Call in
             </text>
             <text x="50" y="47" textAnchor="middle" className="svg-mono-micro" fill="#555555">
-              Answered
+              Signed, private
             </text>
           </g>
 
@@ -171,7 +171,7 @@ export default function RoutingCanvas({
               className="svg-mono-micro"
               fill={isPrivate ? '#0f6b5e' : '#999999'}
             >
-              {isPrivate ? 'OPEN · memory + calendar' : 'LOCKED · no guest access'}
+              {isPrivate ? 'OPEN · tasks, routines, docs' : 'LOCKED · no guest access'}
             </text>
           </g>
 
@@ -202,7 +202,7 @@ export default function RoutingCanvas({
               {isBlocked
                 ? 'BLOCKED · codes, address, notes'
                 : isGuest
-                  ? 'ACTIVE · takes a message only'
+                  ? 'ACTIVE · 0 tools, message only'
                   : 'SKIPPED · owner confirmed'}
             </text>
           </g>
@@ -221,7 +221,7 @@ export default function RoutingCanvas({
               Telegram
             </text>
             <text x="63" y="47" textAnchor="middle" className="svg-mono-micro" fill={activeColor}>
-              Summary sent
+              {isPrivate ? 'Held till call ends' : 'Summary sent'}
             </text>
           </g>
         </svg>

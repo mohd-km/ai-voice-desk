@@ -1,8 +1,8 @@
 export const HERO_METRICS = [
-  { value: '2.0s', label: 'to recall a fact' },
-  { value: '5', label: 'languages' },
-  { value: '$0', label: 'extra server cost' },
-  { value: '2', label: 'separate caller lanes' }
+  { value: '2', label: 'separate caller lanes' },
+  { value: '0', label: 'tools in the guest lane' },
+  { value: '30 min', label: 'longest owner call' },
+  { value: '7', label: 'languages' }
 ];
 
 export const REAL_VOICE_TRANSCRIPT = [
@@ -170,6 +170,14 @@ export const SIMULATOR_PRESETS = [
       'Quick check. What is on my calendar tomorrow morning, and add a reminder to send the proposal before noon.'
   },
   {
+    id: 'owner-routine',
+    label: 'Owner Routine + Doc',
+    tag: 'Private Lane',
+    tone: 'private',
+    callerProfile: 'owner',
+    utterance: 'Run my morning brief, and make the open-house research a doc.'
+  },
+  {
     id: 'spam',
     label: 'Credit Spam Pitch',
     tag: 'Screened',
@@ -183,31 +191,45 @@ export const SIMULATOR_PRESETS = [
 export const ARCHITECTURE_STEPS = [
   {
     number: '01',
-    title: 'Answer in his voice',
-    caption: '5 languages, calm intake',
+    title: 'A private way in',
+    caption: 'Fixed address, signed calls',
     description:
-      'A computer voice trained to sound like Mohammed (a cloned text-to-speech voice) answers the call. It turns the caller’s words into text and replies without revealing anything private.'
+      'Calls reach the server through one permanent private address instead of a temporary tunnel that changed on every restart. Each message from the phone company carries a signature that is checked before anything runs, and the audio streams both ways over one open connection (a WebSocket), so replies start in about a second.'
   },
   {
     number: '02',
-    title: 'Pick a lane',
-    caption: 'Who is calling decides',
+    title: 'Answer in his voice',
+    caption: '7 languages',
     description:
-      'If the caller is confirmed to be Mohammed, the call enters the private lane. Every other caller, family included, stays in the guest lane, which is walled off from his private data.'
+      'A computer voice trained to sound like Mohammed (a cloned text-to-speech voice) answers the call. It turns the caller\u2019s words into text and replies in the caller\u2019s language: English, Malayalam, Hindi, Tamil, Kannada, Telugu or Arabic.'
   },
   {
     number: '03',
-    title: 'Block risky actions',
-    caption: 'Tool firewall',
+    title: 'Pick a lane',
+    caption: 'Who is calling decides',
     description:
-      'Requests for bank codes (OTPs), the home address or his private notes are refused by fixed rules outside the private lane. Same request, same refusal, every time.'
+      'His own number opens the private lane, with a spoken password on top once he sets one. Every other caller, family included, stays in the guest lane, which is walled off from his private data.'
   },
   {
     number: '04',
-    title: 'Send a summary',
-    caption: 'Telegram message',
+    title: 'Guest lane: no tools',
+    caption: 'Nothing to misuse',
     description:
-      'Every call ends with a short Telegram message: who called, how risky it was and what was asked. Mohammed reads it later and decides if anything needs a reply.'
+      'The guest lane has no tools wired in at all. Requests for bank codes (OTPs), the home address or his notes get the same polite refusal every time, and he gets a short Telegram note after the call.'
+  },
+  {
+    number: '05',
+    title: 'Owner lane: real work',
+    caption: 'Cloud first, laptop fallback',
+    description:
+      'In the private lane he can ask for anything the brain can do. Tasks run on the cloud computer and move to his laptop only when a website blocks the cloud. He can ask how far along a task is, answer its questions mid-call, run or schedule saved routines and say \u201cmake it a doc\u201d. Calls can last up to 30 minutes.'
+  },
+  {
+    number: '06',
+    title: 'Quiet while he talks',
+    caption: 'One summary after',
+    description:
+      'No Telegram pings during his call. Results are spoken, and anything that arrived meanwhile goes out as one message after he hangs up. A long task calls him back by default, unless he asks for Telegram.'
   }
 ];
 
@@ -216,6 +238,7 @@ export const TOOL_PLAIN = {
   calendar_and_tasks: 'See calendar, add tasks',
   home_address_lookup: 'Look up home address',
   otp_and_auth_codes: 'Read out bank or login codes',
+  owner_tasks_and_routines: 'Run tasks, routines and docs',
   telegram_desk_alert: 'Send summary to Mohammed'
 };
 
@@ -228,6 +251,9 @@ export const RULE_PLAIN = {
   RULE_FAMILY_WARM_HANDOFF: 'Family: pass the message on',
   RULE_PERSONAL_MEMORY_INTENT: 'Asked about calendar or notes',
   RULE_URGENCY_ESCALATION: 'Urgent: alert straight away',
+  RULE_OWNER_ROUTINE: 'Owner: saved routine',
+  RULE_OWNER_DOC: 'Owner: make it a doc',
+  RULE_OWNER_PROGRESS: 'Owner: asks how far along',
   RULE_DEFAULT_GUEST_INTAKE: 'Take a message'
 };
 
@@ -238,6 +264,9 @@ const PATTERNS = {
   spam: /\b(pre[- ]?approved|exclusive offer|congratulations|credit offer|loan offer|insurance plan|promotional|limited time offer|telemarketing)\b/i,
   delivery: /\b(delivery|parcel|package|courier|rider|main gate|reception|drop[- ]?off|amazon|swiggy|zomato|bluedart|dhl)\b/i,
   family: /\b(mom|dad|mother|father|sister|brother|family|salam|dinner|home tonight|check in|call me back)\b/i,
+  routine: /\b(routine|morning brief|every (?:day|weekday|morning|monday|week)|brief me)\b/i,
+  doc: /\b(make (?:it|that|this|the [a-z -]+) (?:a|into a) doc|google doc|document)\b/i,
+  progress: /\b(how far along|progress|status of|still running|is it done)\b/i,
   schedule: /\b(calendar|schedule|meeting|remind|reminder|task|todo|proposal|notes|memory|priority|priorities)\b/i,
   urgent: /\b(urgent|emergency|hospital|accident|immediately|right away|asap)\b/i
 };
@@ -254,6 +283,9 @@ export function evaluateCallerScenario({ callerProfile = 'unknown', utterance = 
   const hasFamily = PATTERNS.family.test(cleanText);
   const hasSchedule = PATTERNS.schedule.test(cleanText);
   const hasUrgent = PATTERNS.urgent.test(cleanText);
+  const hasRoutine = PATTERNS.routine.test(cleanText);
+  const hasDoc = PATTERNS.doc.test(cleanText);
+  const hasProgress = PATTERNS.progress.test(cleanText);
 
   if (hasOtp) matchedRules.push('RULE_BLOCK_OTP_EXFIL');
   if (hasAddress) matchedRules.push('RULE_BLOCK_HOME_ADDRESS');
@@ -263,6 +295,11 @@ export function evaluateCallerScenario({ callerProfile = 'unknown', utterance = 
   if (hasFamily) matchedRules.push('RULE_FAMILY_WARM_HANDOFF');
   if (hasSchedule) matchedRules.push('RULE_PERSONAL_MEMORY_INTENT');
   if (hasUrgent) matchedRules.push('RULE_URGENCY_ESCALATION');
+  if (callerProfile === 'owner') {
+    if (hasRoutine) matchedRules.unshift('RULE_OWNER_ROUTINE');
+    if (hasDoc) matchedRules.push('RULE_OWNER_DOC');
+    if (hasProgress) matchedRules.push('RULE_OWNER_PROGRESS');
+  }
 
   const isOwner = callerProfile === 'owner';
   const isFamily = callerProfile === 'family';
@@ -285,14 +322,29 @@ export function evaluateCallerScenario({ callerProfile = 'unknown', utterance = 
     laneTone = 'private';
     memoryState = 'Private memory open (2.0s)';
     riskLevel = 'verified';
-    action = hasSchedule ? 'execute_memory_and_tasks' : 'assist_owner_directly';
-    deskReply = hasSchedule
-      ? 'You have a design review at 10:00 AM and an open block after 11:00 AM. I have added the reminder to your task list.'
-      : 'Verified owner session active. Private memory and cloud actions are ready. What would you like me to handle?';
-    telegramHeading = 'owner call log';
-    summaryBullets = hasSchedule
-      ? ['checked tomorrow morning schedule (10:00 am design review)', 'added reminder to task list', 'executed in private owner lane']
-      : ['verified owner direct call completed', 'private lane session closed cleanly'];
+    const ownerWork = hasRoutine || hasDoc || hasProgress;
+    action = ownerWork ? 'run_owner_task' : hasSchedule ? 'execute_memory_and_tasks' : 'assist_owner_directly';
+    const replyParts = [];
+    if (hasRoutine) replyParts.push('Running your morning brief: two meetings today, the first at 11.');
+    if (hasProgress) replyParts.push('Six of eight checks are done. I will tell you when it finishes.');
+    if (hasDoc) replyParts.push('I will put the result in a Google Doc and send you the link after the call.');
+    deskReply = ownerWork
+      ? replyParts.join(' ')
+      : hasSchedule
+        ? 'You have a design review at 10:00 AM and an open block after 11:00 AM. I have added the reminder to your task list.'
+        : 'Verified owner session active. Private memory and cloud actions are ready. What would you like me to handle?';
+    telegramHeading = 'while you were on the call';
+    summaryBullets = ownerWork
+      ? [
+          ...(hasRoutine ? ['morning brief read out on the call'] : []),
+          ...(hasProgress ? ['task progress spoken on request'] : []),
+          ...(hasDoc ? ['google doc made from the result'] : []),
+          'ran on the cloud computer, laptop not needed',
+          'held until the call ended, sent as one message'
+        ]
+      : hasSchedule
+        ? ['checked tomorrow morning schedule (10:00 am design review)', 'added reminder to task list', 'held until the call ended, sent as one message']
+        : ['owner call completed in the private lane', 'nothing held back'];
   } else if (hasOtp || (hasFinance && hasAddress)) {
     laneId = 'BLOCKED_GUARDRAIL_LANE';
     laneTitle = 'Guardrail Blocked';
@@ -410,6 +462,12 @@ export function evaluateCallerScenario({ callerProfile = 'unknown', utterance = 
       reason: hasOtp ? 'Hard-blocked: OTP solicitation detected' : 'Permanently disabled on voice desk'
     },
     {
+      id: 'owner_tasks_and_routines',
+      label: 'owner_tasks_and_routines',
+      status: isOwner ? 'ALLOWED' : 'BLOCKED',
+      reason: isOwner ? 'Cloud first, laptop if a site blocks the cloud' : 'Guest lane has no tools'
+    },
+    {
       id: 'telegram_desk_alert',
       label: 'telegram_desk_alert',
       status: 'ALLOWED',
@@ -431,6 +489,7 @@ export function evaluateCallerScenario({ callerProfile = 'unknown', utterance = 
     matched_rules: matchedRules.length > 0 ? matchedRules : ['RULE_DEFAULT_GUEST_INTAKE'],
     blocked_tools: blockedTools,
     action,
+    delivery: isOwner ? 'held_until_call_ends' : 'sent_after_call',
     alert: {
       heading: telegramHeading,
       bullets: summaryBullets

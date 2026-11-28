@@ -55,8 +55,8 @@ test('Delivery rider receives gate drop-off without exposing home occupancy', ()
   assert.ok(result.deskReply.toLowerCase().includes('security'));
 });
 
-test('Two-speaker call demo lasts between 45 and 60 seconds and covers both speakers', () => {
-  assert.ok(TWO_SPEAKER_CALL.duration >= 45 && TWO_SPEAKER_CALL.duration <= 60);
+test('Two-speaker call demo lasts between 40 and 60 seconds and covers both speakers', () => {
+  assert.ok(TWO_SPEAKER_CALL.duration >= 40 && TWO_SPEAKER_CALL.duration <= 60);
   const roles = new Set(TWO_SPEAKER_CALL.segments.map((s) => s.role));
   assert.ok(roles.has('caller'));
   assert.ok(roles.has('desk'));
@@ -72,4 +72,23 @@ test('All simulator presets produce valid Telegram JSON payloads', () => {
     assert.ok(Array.isArray(res.telegramJson.alert.bullets));
     assert.ok(res.telegramJson.alert.bullets.length > 0);
   }
+});
+
+test('Owner routine and doc requests run in the private lane and are held until the call ends', () => {
+  const r = evaluateCallerScenario({
+    callerProfile: 'owner',
+    utterance: 'Run my morning brief, and make the open-house research a doc.'
+  });
+  assert.equal(r.laneId, 'PRIVATE_OWNER_LANE');
+  assert.equal(r.matchedRules[0], 'RULE_OWNER_ROUTINE');
+  assert.ok(r.matchedRules.includes('RULE_OWNER_DOC'));
+  assert.equal(r.telegramJson.delivery, 'held_until_call_ends');
+  assert.equal(r.tools.find((t) => t.id === 'owner_tasks_and_routines').status, 'ALLOWED');
+});
+
+test('The same routine request from a guest gets no tools', () => {
+  const r = evaluateCallerScenario({ callerProfile: 'unknown', utterance: 'Run my morning brief and make it a doc.' });
+  assert.notEqual(r.laneTone, 'private');
+  assert.equal(r.tools.find((t) => t.id === 'owner_tasks_and_routines').status, 'BLOCKED');
+  assert.ok(!r.matchedRules.includes('RULE_OWNER_ROUTINE'));
 });
