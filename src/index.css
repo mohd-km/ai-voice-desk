@@ -1372,3 +1372,8 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Headline numbers sit under the hero text (topbar holds only logo + project name). */
+.hero-text .metric-strip {
+  margin-top: 14px;
+}

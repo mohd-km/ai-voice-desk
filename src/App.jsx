@@ -17,7 +17,7 @@ const STORIES = {
   simulator: {
     problem: 'See exactly what the desk will and will not do for different callers.',
     how:
-      'Your text is checked for warning words (like “OTP”, “address” or “parcel”) and combined with who is calling. That decides the lane, the spoken reply, which actions are allowed, and the summary sent to Mohammed. Fixed rules, not guesswork, so the same call always gets the same answer.',
+      'Your text is checked for warning words (like “OTP”, a one-time bank code, “address” or “parcel”) and combined with who is calling. That decides the lane, the spoken reply, which actions are allowed, and the summary sent to Mohammed. Fixed rules, not guesswork, so the same call always gets the same answer.',
     tryThis:
       'Click “Owner Direct Call”, then switch the caller to “Unknown Number”: the memory and calendar rows flip from ALLOWED to BLOCKED.'
   }
@@ -58,14 +58,6 @@ export default function App() {
             <span className="brand-name">AI Voice Desk</span>
           </div>
 
-          <div className="metric-strip" aria-label="Verified system metrics">
-            {HERO_METRICS.map((m) => (
-              <span key={m.label} className="metric-chip">
-                <strong className="metric-val">{m.value}</strong>
-                <span className="metric-lbl">{m.label}</span>
-              </span>
-            ))}
-          </div>
         </div>
       </header>
 
@@ -79,6 +71,14 @@ export default function App() {
               <p className="hero-subtitle">
                 Scam callers often pose as couriers or banks to get a home address or a bank code. This desk answers the phone in a copy of Mohammed’s voice, never gives strangers anything private, and sends him a short summary after every call.
               </p>
+              <div className="metric-strip" aria-label="Verified system metrics">
+                {HERO_METRICS.map((m) => (
+                  <span key={m.label} className="metric-chip">
+                    <strong className="metric-val">{m.value}</strong>
+                    <span className="metric-lbl">{m.label}</span>
+                  </span>
+                ))}
+              </div>
             </div>
 
             <div className="view-tabs" role="tablist" aria-label="Interactive workspace views">
